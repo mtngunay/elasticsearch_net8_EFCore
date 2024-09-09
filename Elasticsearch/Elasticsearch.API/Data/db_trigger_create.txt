@@ -1,0 +1,29 @@
+﻿CREATE TRIGGER trgAfterProductUpdate
+ON Products
+AFTER INSERT, UPDATE, DELETE
+AS
+BEGIN
+    -- Insert Log for Insert
+    IF EXISTS (SELECT * FROM inserted)
+    BEGIN
+        INSERT INTO ProductLogs (ProductId, OperationType, OperationDate, Details)
+        SELECT Id, 'Insert', GETDATE(), 'Product Inserted'
+        FROM inserted
+    END
+
+    -- Insert Log for Update
+    IF EXISTS (SELECT * FROM deleted)
+    BEGIN
+        INSERT INTO ProductLogs (ProductId, OperationType, OperationDate, Details)
+        SELECT Id, 'Update', GETDATE(), 'Product Updated'
+        FROM inserted
+    END
+
+    -- Insert Log for Delete
+    IF EXISTS (SELECT * FROM deleted)
+    BEGIN
+        INSERT INTO ProductLogs (ProductId, OperationType, OperationDate, Details)
+        SELECT Id, 'Delete', GETDATE(), 'Product Deleted'
+        FROM deleted
+    END
+END
